@@ -1,0 +1,106 @@
+.header {
+    position: fixed;
+    top: 0; left: 0; width: 100%;
+    padding: 1.5rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    mix-blend-mode: difference;
+    color: #fff;
+    transition: padding 0.4s var(--ease-elegant);
+}
+
+.header.scrolled {
+    padding: 1rem 3rem;
+}
+
+.brand-logo {
+    font-family: var(--f-head);
+    font-size: 1.5rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.header-controls {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.icon-btn {
+    opacity: 0.8;
+    transition: opacity 0.3s, transform 0.3s;
+    display: flex; align-items: center; justify-content: center;
+}
+.icon-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.menu-toggle {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.fs-menu {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100vh;
+    background: rgba(11, 11, 12, 0.8);
+    backdrop-filter: blur(24px);
+    z-index: 99;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s var(--ease-elegant);
+}
+.fs-menu.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.fs-menu ul {
+    list-style: none;
+    text-align: center;
+}
+.fs-menu li {
+    margin: 1.5rem 0;
+    overflow: hidden;
+}
+.fs-menu a {
+    display: inline-block;
+    font-family: var(--f-head);
+    font-size: 4rem;
+    color: #F4EFE6;
+    transform: translateY(100%);
+    transition: transform 0.8s var(--ease-out-expo), color 0.3s;
+}
+.fs-menu.active a {
+    transform: translateY(0);
+}
+.fs-menu li:nth-child(1) a { transition-delay: 0.1s; }
+.fs-menu li:nth-child(2) a { transition-delay: 0.15s; }
+.fs-menu li:nth-child(3) a { transition-delay: 0.2s; }
+.fs-menu li:nth-child(4) a { transition-delay: 0.25s; }
+
+.fs-menu a:hover {
+    color: var(--c-gold);
+}
+
+.mobile-cta {
+    display: none;
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem; right: 1rem;
+    z-index: 90;
+}
+@media (max-width: 768px) {
+    .header { padding: 1rem; mix-blend-mode: normal; }
+    .header.scrolled { padding: 0.5rem 1rem; background: rgba(var(--glass-bg)); backdrop-filter: blur(10px); }
+    .mobile-cta { display: block; }
+    .fs-menu a { font-size: 2.5rem; }
+}
