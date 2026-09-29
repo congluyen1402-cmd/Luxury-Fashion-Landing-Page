@@ -1,0 +1,183 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  OWNER
+  STAFF
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(STAFF)
+  createdAt DateTime @default(now())
+}
+
+enum Tier {
+  NONE
+  SILVER
+  GOLD
+  BLACK
+}
+
+enum WaitlistStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Customer {
+  id             String   @id @default(cuid())
+  fullName       String
+  email          String   @unique
+  phone          String?
+  address        String?
+  birthday       DateTime?
+  sizeProfile    Json?    // { chest, waist, hips, height }
+  styleNotes     String?
+  tier           Tier     @default(NONE)
+  lifetimeSpend  Float    @default(0)
+  tags           String[] // VIP, new, at-risk
+  source         String?
+  marketingOptIn Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  
+  waitlistStatus WaitlistStatus?
+  orders         Order[]
+  notes          CustomerNote[]
+}
+
+model CustomerNote {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+  content    String
+  authorId   String
+  createdAt  DateTime @default(now())
+}
+
+enum ProductStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  SOLD_OUT
+}
+
+model Product {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  sku             String   @unique
+  shortDesc       String?
+  longDesc        String?
+  price           Float
+  salePrice       Float?
+  costPrice       Float?
+  materials       String?
+  careInst        String?
+  story           String?
+  status          ProductStatus @default(DRAFT)
+  
+  isLimited       Boolean  @default(false)
+  editionSize     Int?
+  
+  releaseDate     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  categoryId      String?
+  category        Category? @relation(fields: [categoryId], references: [id])
+  
+  collections     Collection[]
+  variants        Variant[]
+}
+
+model Variant {
+  id         String   @id @default(cuid())
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id])
+  sku        String   @unique
+  color      String?
+  size       String?
+  stock      Int      @default(0)
+  images     String[] // URLs
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String
+  parentId String?
+  parent   Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryHierarchy")
+  products Product[]
+}
+
+model Collection {
+  id       String    @id @default(cuid())
+  name     String
+  products Product[]
+}
+
+enum OrderStatus {
+  NEW
+  PROCESSING
+  SHIPPED
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+model Order {
+  id         String      @id @default(cuid())
+  customerId String
+  customer   Customer    @relation(fields: [customerId], references: [id])
+  status     OrderStatus @default(NEW)
+  total      Float
+  createdAt  DateTime    @default(now())
+}
+
+model Media {
+  id        String   @id @default(cuid())
+  url       String
+  publicId  String
+  format    String
+  altText   String?
+  tags      String[]
+  createdAt DateTime @default(now())
+}
+
+model SiteSettings {
+  id          String @id @default("global")
+  brandName   String
+  announcement String?
+  heroImage   String?
+  heroTitle   String?
+  seoTitle    String?
+  seoDesc     String?
+}
+
+model SiteImage {
+  id              String   @id @default(cuid())
+  slotKey         String   @unique
+  sectionName     String
+  description     String?
+  imageUrl        String?
+  mobileImageUrl  String?
+  altText         String?
+  recommendedSize String?
+  focalPointX     Float    @default(50)
+  focalPointY     Float    @default(50)
+  history         Json?    
+  status          String   @default("PUBLISHED") 
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  updatedBy       String?
+}
